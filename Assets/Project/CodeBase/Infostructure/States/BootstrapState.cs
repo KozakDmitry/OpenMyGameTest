@@ -46,7 +46,7 @@ namespace Assets.Project.CodeBase.Infostructure.States
         public async UniTask Enter(string startScene)
         {
             CheckStartScene(ref startScene);
-            await _services.Single<ISceneService>().LoadScene(Initial);
+            await _services.Single<ISceneService>().LoadFirstScene(Initial);
             EnterLoadLevel(startScene);
         }
 

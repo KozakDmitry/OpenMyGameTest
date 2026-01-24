@@ -11,7 +11,7 @@ namespace Assets.Project.CodeBase.Infostructure
             Bootstrapper bootstrapper = FindFirstObjectByType<Bootstrapper>();
             if (bootstrapper == null)
             {
-                Instantiate(bootstrapperPrefab);
+                Instantiate(bootstrapperPrefab); 
             }
         }
     }

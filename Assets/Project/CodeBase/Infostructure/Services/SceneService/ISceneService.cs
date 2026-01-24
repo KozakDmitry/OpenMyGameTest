@@ -7,6 +7,8 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
     public interface ISceneService : IService
     {
         event OnLoad OnSceneLoaded;
+
+        UniTask LoadFirstScene(string scene);
         UniTask LoadScene(string nextScene, Action<string> callback = null);
     }
 }

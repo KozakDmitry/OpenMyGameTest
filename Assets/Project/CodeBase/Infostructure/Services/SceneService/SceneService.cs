@@ -29,6 +29,11 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
             _stateMachine = stateMachine;
         }
 
+        public async UniTask LoadFirstScene(string scene)
+        {
+           await _sceneLoader.Load(scene);
+        }
+
         public async UniTask LoadScene(string nextScene, Action<string> callback = null)
         {
             if (!isLoading)
