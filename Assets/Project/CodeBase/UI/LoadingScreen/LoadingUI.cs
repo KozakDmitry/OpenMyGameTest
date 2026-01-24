@@ -1,16 +1,22 @@
 ﻿
+using Assets.Project.CodeBase.Infostructure.Services;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Project.CodeBase.UI.LoadingScreen
 {
-    public class LoadingUI : MonoBehaviour
+    public class LoadingUI : MonoBehaviour, IObject
     {
         public Slider slider;
 
         private void Awake()
         {
-            DIContainer.Get().Register<LoadingUI>(this);
+            AllServices.Container.RegisterObject(this);
+        }
+
+        private void OnDestroy()
+        {
+            AllServices.Container.DeleteObject(this);
         }
 
     }

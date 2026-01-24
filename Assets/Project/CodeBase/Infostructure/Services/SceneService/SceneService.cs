@@ -20,7 +20,6 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
 
         public delegate void OnLoad();
         public event OnLoad OnSceneLoaded;
-        private bool isLoading;
 
 
         public SceneService(IGameStateMachine stateMachine)
@@ -31,26 +30,22 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
 
         public async UniTask LoadFirstScene(string scene)
         {
-           await _sceneLoader.Load(scene);
+            await _sceneLoader.Load(scene);
         }
 
         public async UniTask LoadScene(string nextScene, Action<string> callback = null)
         {
-            if (!isLoading)
+            LoadingUI loadUI = await InitLoadingScene();
+            await _sceneLoader.LoadBase(nextScene, loadUI.slider, async (loadingScene) =>
             {
-                isLoading = true;
-                LoadingUI loadUI = await InitLoadingScene();
-                await _sceneLoader.LoadBase(nextScene, loadUI.slider, async (loadingScene) =>
+                for (float k = 0.8f; k < 0.9f; k += 0.01f)
                 {
-                    for (float k = 0.8f; k < 0.9f; k += 0.01f)
-                    {
-                        await UniTask.Delay(10);
-                        loadUI.slider.value = k;
-                    }
-                    await InitializeAndSwapToNewScene(nextScene, loadingScene, loadUI.slider);
+                    await UniTask.Delay(10);
+                    loadUI.slider.value = k;
+                }
+                await InitializeAndSwapToNewScene(nextScene, loadingScene, loadUI.slider);
 
-                });
-            }
+            });
         }
 
         private async UniTask InitializeAndSwapToNewScene(string nextScene, Scene LoadingScene, Slider slider)
@@ -64,7 +59,6 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
             }
             await SceneManager.UnloadSceneAsync(SceneNames.Loading);
             GC.Collect();
-            isLoading = false;
             OnSceneLoaded?.Invoke();
         }
 
@@ -79,19 +73,8 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
             return loadUI;
         }
 
-        private async UniTask<LoadingUI> InitializeLoadingUI()
-        {
-            LoadingUI loadingUI = null;
-            DIContainer.Get().Resolve<LoadingUI>((call) =>
-            {
-                loadingUI = call as LoadingUI;
-            });
-            while (loadingUI == null)
-            {
-                await UniTask.Yield();
-            }
-            return loadingUI;
-        }
+        private async UniTask<LoadingUI> InitializeLoadingUI() =>
+            await AllServices.Container.SingleAwait<LoadingUI>();
     }
 
 

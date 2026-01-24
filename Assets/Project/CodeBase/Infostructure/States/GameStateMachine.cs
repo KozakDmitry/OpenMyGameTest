@@ -4,6 +4,7 @@ using System;
 using Assets.Project.CodeBase.StaticData;
 using System.Collections.Generic;
 using Assets.Project.CodeBase.Infostructure.Services.SceneService;
+using Assets.Project.CodeBase.Infostructure.Services.SaveService;
 
 namespace Assets.Project.CodeBase.Infostructure.States
 {
@@ -20,7 +21,7 @@ namespace Assets.Project.CodeBase.Infostructure.States
             _states = new Dictionary<Type, IExitableState>
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, _services),
-                [typeof(LoadProgressState)] = new LoadProgressState(this, _services.Single<ISceneService>()),
+                [typeof(LoadProgressState)] = new LoadProgressState(this, _services.Single<ISceneService>(),_services.Single<ISaveService>()),
                 [typeof(LoadLevelState)] = new LoadLevelState(this),
 
                 [typeof(GameLoopState)] = new GameLoopState(this),

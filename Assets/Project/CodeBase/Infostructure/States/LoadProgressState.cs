@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Assets.Project.CodeBase.Infostructure.Services.SaveService;
 using Assets.Project.CodeBase.Infostructure.Services.SceneService;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -9,30 +10,23 @@ namespace Assets.Project.CodeBase.Infostructure.States
     {
         private readonly IGameStateMachine _gameStateMachine;
         private readonly ISceneService _sceneService;
-
-        public LoadProgressState(IGameStateMachine gameStateMachine, ISceneService sceneService)
+        private readonly ISaveService _saveService;
+        public LoadProgressState(IGameStateMachine gameStateMachine, ISceneService sceneService, ISaveService saveService)
         {
             _gameStateMachine = gameStateMachine;
             _sceneService = sceneService;
+            _saveService = saveService;
         }
 
         public async UniTask Enter(string startScene)
         {
+            _saveService.Load();
             await _sceneService.LoadScene(startScene);
         }
-
-
-
 
         public void Exit()
         {
 
         }
-    }
-    public class QualityItem
-    {
-        public Vector2 Memory;
-        public int idQuality;
-
     }
 }
