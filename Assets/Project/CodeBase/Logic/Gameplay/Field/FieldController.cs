@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 {
-    public class FieldController : InitializableWindow, IObject
+    public class FieldController : InitializableWindow
     {
         private IField _field;
         private IStaticDataService _staticDataService;
@@ -35,20 +35,48 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             BuildField();
         }
 
+        //private async UniTask SetFieldSize(FieldConfigData _config)
+        //{
+        //    CameraSizeProvider cam = await AllServices.Container.SingleAwait<CameraSizeProvider>();
+        //    var rect = cam.GetCameraBounds();
+        //    var fieldPos = rect.position + rect.size * _config.relativePosition;
+        //    var fieldBounds = new Rect(fieldPos, rect.size * _config.relativeFieldSize);
+        //    _field.SetupFieldSize(fieldBounds);
+        //}
         private async UniTask SetFieldSize(FieldConfigData _config)
         {
-            CameraSizeProvider cam = await AllServices.Container.SingleAwait<CameraSizeProvider>();
-            var rect = cam.GetFieldSize();
-            var fieldPos = rect.position + rect.size * _config.relativePosition;
-            var fieldRect = new Rect(fieldPos, rect.size * _config.relativeFieldSize);
-            _field.SetupFieldSize(fieldRect);
+            CameraSizeProvider camProvider = await AllServices.Container.SingleAwait<CameraSizeProvider>();
+            Bounds cameraBounds = camProvider.GetCameraBounds();
+            Vector2 fieldSize = new Vector2(
+                cameraBounds.size.x * _config.relativeFieldSize.x,
+                cameraBounds.size.y * _config.relativeFieldSize.y
+            );
+
+            Vector2 fieldCenter = cameraBounds.center + new Vector3(
+                cameraBounds.size.x * _config.relativePosition.x,
+                cameraBounds.size.y * _config.relativePosition.y,
+                0
+            );
+            var fieldBounds = new Bounds(fieldCenter, new Vector3(fieldSize.x, fieldSize.y, 0));
+
+            _field.SetupFieldSize(fieldBounds);
         }
 
         private void BuildField()
         {
             BuildMatrix(GetCurrentLevel());
         }
-
+        private void BuildMatrix(LevelInfo levelInfo)
+        {
+            _field.InitializeGrid(levelInfo.GetSize());
+            for (int i = 0; i < levelInfo.FlatMatrix.Length; i++)
+            {
+                if (levelInfo.FlatMatrix[i] != 0)
+                {
+                    _field.AddCell(_cubeFactory.CreateFieldCell(levelInfo.FlatMatrix[i]), levelInfo.GetMatrixPosition(i));
+                }
+            }
+        }
         private LevelInfo GetCurrentLevel()
         {
             return _staticDataService.ForFieldData().levelInfo
@@ -56,14 +84,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                  ?? _staticDataService.ForFieldData().levelInfo[0];
         }
 
-        private void BuildMatrix(LevelInfo levelInfo)
-        {
-            _field.InitializeGrid(levelInfo.GetSize());
-            for (int i = 0; i <= levelInfo.FlatMatrix.Length; i++)
-            {
-                _field.AddCell(_cubeFactory.CreateFieldCell(levelInfo.FlatMatrix[i]), levelInfo.GetMatrixPosition(i));
-            }
-        }
+
 
     }
 

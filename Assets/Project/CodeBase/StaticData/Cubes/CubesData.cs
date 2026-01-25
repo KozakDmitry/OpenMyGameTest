@@ -20,9 +20,5 @@ namespace Assets.Project.CodeBase.StaticData.Cubes
     {
         public int id;
         public Transform basePrefab;
-        public AnimatorController baseAnimator;
-        public AnimationClip idle, 
-                             destroying;
-
     }
 }

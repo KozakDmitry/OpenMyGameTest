@@ -18,11 +18,8 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SaveService
         public List<ISavedProgress> ProgressWriters { get; } = new List<ISavedProgress>();
 
 
-        public SaveService(IProgressService progressService)
-        {
+        public SaveService(IProgressService progressService) =>
             _progressService = progressService;
-
-        }
         public void RegisterWriter(ISavedProgress writer) =>
             ProgressWriters.Add(writer);
         public void RemoveWriter(ISavedProgress writer) =>
@@ -42,7 +39,10 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SaveService
             if (item != null && item != default)
             {
                 PlayerProgress progress = JsonUtility.FromJson<PlayerProgress>(item);
-                _progressService.Progress.SetFromSave(progress);
+                if (progress != null)
+                {
+                    _progressService.Progress.SetFromSave(progress);
+                }
             }
         }
 

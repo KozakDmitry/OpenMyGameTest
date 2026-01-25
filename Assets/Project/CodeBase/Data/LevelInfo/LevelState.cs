@@ -12,14 +12,12 @@ namespace Assets.Project.CodeBase.Data.LevelInfo
     public class LevelState
     {
         public int currentLevelId;
-        public List<LevelConditions> levelCondition;
 
         public LevelState()
         {
             currentLevelId = 0;
-            levelCondition = new();
+           
         }
-
         public void FromSave(LevelState levelInfo)
         {
             if (levelInfo == null)
@@ -30,19 +28,12 @@ namespace Assets.Project.CodeBase.Data.LevelInfo
             {
                 currentLevelId = levelInfo.currentLevelId;
             }
-            if (levelInfo.levelCondition != null && levelInfo.levelCondition.Count > 0)
-            {
-                levelCondition = new List<LevelConditions>();
-            }
+
         }
+
     }
 
-    [Serializable]
-    public struct LevelConditions
-    {
-        public Vector2Int pos;
-        public int id;
-    }
+ 
 
 
 }

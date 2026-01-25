@@ -26,7 +26,7 @@ namespace Assets.Project.CodeBase.StaticData.Field
         public int Columns => columns;
         public int[] FlatMatrix => flatMatrix;
         public Vector2Int GetSize() =>
-          new Vector2Int(rows, columns);
+          new Vector2Int(columns, rows);
         public int GetValue(Vector2Int value)
         {
             if (value.x < 0 || value.x >= rows || value.y < 0 || value.y >= columns)
@@ -37,7 +37,13 @@ namespace Assets.Project.CodeBase.StaticData.Field
         {
             if (flatIndex < 0 || flatIndex >= flatMatrix.Length)
                 throw new IndexOutOfRangeException("Индекс вне диапазона");
-            return new Vector2Int(flatIndex / columns, flatIndex % columns);
+            return new Vector2Int(flatIndex % columns, rows - 1 - flatIndex / columns);
+        }
+        int GetCellValue(int gameRow, int col)
+        {
+            int editorRow = Rows - 1 - gameRow;
+            int index = editorRow * Columns + col;
+            return flatMatrix[index];
         }
 
         public void SetValue(int row, int col, int value)
@@ -71,6 +77,6 @@ namespace Assets.Project.CodeBase.StaticData.Field
             }
         }
 
-      
+
     }
 }

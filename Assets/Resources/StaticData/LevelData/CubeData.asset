@@ -14,12 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Assets.Project.CodeBase.StaticData.Cubes.CubesData
   cubeData:
   - id: 1
-    basePrefab: {fileID: 6542037618096021933, guid: 574f9476d01c2904aae4074d8a745170, type: 3}
-    baseAnimator: {fileID: 9100000, guid: ef8cbd3038075d945ab60fd43e9afc25, type: 2}
-    idle: {fileID: 7400000, guid: 420b9936906f20843ac4cf5502195713, type: 2}
-    destroying: {fileID: 7400000, guid: ec2d649e7deb1cc47bc8df301da6c1c3, type: 2}
+    basePrefab: {fileID: 5332828620638130846, guid: fd9f42a58e20cd8458333c1c4e31e928, type: 3}
   - id: 2
-    basePrefab: {fileID: 6542037618096021933, guid: 574f9476d01c2904aae4074d8a745170, type: 3}
-    baseAnimator: {fileID: 9100000, guid: ef8cbd3038075d945ab60fd43e9afc25, type: 2}
-    idle: {fileID: 7400000, guid: 07149b608c41c9d41aa088c65565f66b, type: 2}
-    destroying: {fileID: 7400000, guid: eb30601eb40eab647b40d7be466a6083, type: 2}
+    basePrefab: {fileID: 2395843396163820337, guid: 343628587cbf2ae4a812d71f38e24db4, type: 3}

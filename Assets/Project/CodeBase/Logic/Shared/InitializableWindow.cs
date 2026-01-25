@@ -10,6 +10,7 @@ namespace Assets.Project.CodeBase.Logic.Shared
 {
     public class InitializableWindow : MonoBehaviour
     {
+
         public virtual async UniTask Initialize()
         {
 
@@ -19,5 +20,7 @@ namespace Assets.Project.CodeBase.Logic.Shared
         {
 
         }
+
+
     }
 }

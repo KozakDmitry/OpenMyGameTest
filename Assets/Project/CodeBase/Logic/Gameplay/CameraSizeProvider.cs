@@ -19,12 +19,21 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
             AllServices.Container.DeleteObject(this);
         }
 
-        public Rect GetFieldSize()
+        public Bounds GetFieldSize()
         {
             Vector2 pos = _cam.transform.position;
             var cameraOrthographicSize = _cam.orthographicSize;
             var size = new Vector2(_cam.aspect * cameraOrthographicSize, cameraOrthographicSize);
-            return new Rect(pos - size, size * 2);
+            return new Bounds(pos - size, size * 2);
+        }
+        public Bounds GetCameraBounds()
+        {
+            float halfHeight = _cam.orthographicSize;
+            float halfWidth = halfHeight * _cam.aspect;
+            Vector3 center = _cam.transform.position;
+            Vector3 size = new Vector3(halfWidth * 2f, halfHeight * 2f, 0f);
+
+            return new Bounds(center, size);
         }
     }
 }

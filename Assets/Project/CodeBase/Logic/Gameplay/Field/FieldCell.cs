@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Project.CodeBase.StaticData.Cubes;
+using System;
 using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.Field
@@ -8,31 +9,33 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         private IField _field;
 
         [SerializeField] private SpriteRenderer spriteRenderer;
+        private int Layer;
 
-        public void Construct()
+        public void Construct(CubeData item)
         {
-            
-        }
-        public void SetSize(float size)
-        {
-            spriteRenderer.size = new Vector2(size, size);
-        }
 
-        public void SetColor(Color color)
-        {
-            spriteRenderer.color = color;
         }
-
-        public void OnFieldInitialize(IField field)
+        public void SetDependency(IField field)
         {
             _field = field;
         }
 
+        public void SetLayer(int layer)
+        {
+            Layer = layer;
+            spriteRenderer.sortingOrder = Layer;
+        }
+        public void SetSize(float size)
+        {
+            float newSize = size / 2;
+            transform.localScale = new Vector3(size / 2, size / 2, size / 2);
+        }
         public void SetPosition(Vector2 gridToPosition)
         {
             Vector3 pos = gridToPosition;
             localPosition = pos;
         }
+  
 
         public void SetGridPosition(Vector2Int position)
         {
@@ -49,6 +52,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             base.Remove();
         }
 
-     
+
     }
 }

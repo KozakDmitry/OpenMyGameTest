@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: FieldConfig
   m_EditorClassIdentifier: Assembly-CSharp::Assets.Project.CodeBase.StaticData.Field.FieldConfigData
   relativeFieldSize: {x: 0.8, y: 0.7}
-  relativePosition: {x: 0, y: 0.1}
+  relativePosition: {x: 0, y: 0}

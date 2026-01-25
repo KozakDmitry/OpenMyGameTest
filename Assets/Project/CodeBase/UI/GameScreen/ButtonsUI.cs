@@ -1,5 +1,6 @@
 ﻿using Assets.Project.CodeBase.Extentions;
 using Assets.Project.CodeBase.Infostructure.Services;
+using Assets.Project.CodeBase.Infostructure.Services.ProgressService;
 using Assets.Project.CodeBase.Infostructure.Services.SceneService;
 using Assets.Project.CodeBase.Logic.Shared;
 using Cysharp.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Assets.Project.CodeBase.UI.GameScreen
                        nextLevelButton;
 
         private ISceneService _sceneService;
+        private IProgressService _progressService;
         public override UniTask Initialize()
         {
             _sceneService = AllServices.Container.Single<ISceneService>();
@@ -27,6 +29,7 @@ namespace Assets.Project.CodeBase.UI.GameScreen
         {
             _sceneService.LoadScene(SceneNames.Game);
         }
+
 
         private void Restart()
         {

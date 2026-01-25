@@ -1,5 +1,4 @@
-﻿using Assets.Project.CodeBase.StaticData.Field;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,29 +12,27 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
         [SerializeField] private Transform container;
 
-        private Rect fieldRect;
+        private Bounds fieldBounds;
 
         private readonly List<FieldCell> _cells = new List<FieldCell>();
         private Grid<FieldCell> _matrix;
         private float _cellWidth;
-        private Vector2Int _cellsSize;
         private Vector2 _placeOffset;
         private Vector2 _cellSize;
 
-
-        public void SetupFieldSize(Rect rect)
+        public void SetupFieldSize(Bounds rect)
         {
-            fieldRect = rect;
+            fieldBounds = rect;
+
         }
         public void InitializeGrid(Vector2Int size)
         {
             ClearCells();
             _matrix = new(size);
-            _cellsSize = size;
-            var fieldSize = fieldRect.size;
-            _cellWidth = Math.Min(fieldRect.size.x / size.x, fieldRect.size.y / size.y);
+            Vector2 fieldSize = fieldBounds.size;
+            _cellWidth = Math.Min(fieldBounds.size.x / size.x, fieldBounds.size.y / size.y);
             _cellSize = new Vector2(_cellWidth, _cellWidth);
-            _placeOffset = fieldRect.position + (fieldSize - _cellSize * size) * 0.5f;
+            _placeOffset = (Vector2)fieldBounds.min + (fieldSize - _cellSize * size) * 0.5f;
         }
 
         public void AddCell(FieldCell viewCell, Vector2Int position)
@@ -45,8 +42,9 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                 return;
             }
             viewCell.transform.SetParent(container);
-            viewCell.OnFieldInitialize(this);
+            viewCell.SetDependency(this);
             viewCell.SetGridPosition(position);
+            viewCell.SetLayer(position.y * (_matrix.Width - 1) + position.x);
             viewCell.SetSize(_cellWidth);
             _matrix[position] = viewCell;
             _cells.Add(viewCell);
