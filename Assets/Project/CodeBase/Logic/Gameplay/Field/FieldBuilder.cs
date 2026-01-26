@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 {
-    public class FieldController : InitializableWindow
+    public class FieldBuilder : InitializableWindow
     {
         private IField _field;
         private IStaticDataService _staticDataService;
@@ -34,15 +34,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             await SetFieldSize(_config);
             BuildField();
         }
-
-        //private async UniTask SetFieldSize(FieldConfigData _config)
-        //{
-        //    CameraSizeProvider cam = await AllServices.Container.SingleAwait<CameraSizeProvider>();
-        //    var rect = cam.GetCameraBounds();
-        //    var fieldPos = rect.position + rect.size * _config.relativePosition;
-        //    var fieldBounds = new Rect(fieldPos, rect.size * _config.relativeFieldSize);
-        //    _field.SetupFieldSize(fieldBounds);
-        //}
         private async UniTask SetFieldSize(FieldConfigData _config)
         {
             CameraSizeProvider camProvider = await AllServices.Container.SingleAwait<CameraSizeProvider>();

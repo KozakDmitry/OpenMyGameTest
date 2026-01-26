@@ -11,5 +11,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         void RemoveView(FieldCell viewCell);
         void SetupFieldSize(Bounds rect);
         void  InitializeGrid(Vector2Int size);
+        void TrySwapTwoCubes(FieldCell result, Vector2 secondDirection);
     }
 }

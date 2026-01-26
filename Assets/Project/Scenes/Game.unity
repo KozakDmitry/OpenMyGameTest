@@ -612,6 +612,7 @@ MonoBehaviour:
   InitializableWindowList:
   - {fileID: 1521335149}
   - {fileID: 1481638740}
+  - {fileID: 1481638741}
 --- !u!1001 &3870163612770704415
 PrefabInstance:
   m_ObjectHideFlags: 0

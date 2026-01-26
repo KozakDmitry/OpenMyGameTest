@@ -1,4 +1,5 @@
 ﻿using Assets.Project.CodeBase.Extentions;
+using Assets.Project.CodeBase.Infostructure.Input;
 using Assets.Project.CodeBase.Infostructure.States;
 using Assets.Project.CodeBase.UI.LoadingScreen;
 using Cysharp.Threading.Tasks;
@@ -17,15 +18,17 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
     {
         private readonly SceneLoader _sceneLoader;
         private readonly IGameStateMachine _stateMachine;
+        private readonly IInputService _inputService;
 
         public delegate void OnLoad();
         public event OnLoad OnSceneLoaded;
 
 
-        public SceneService(IGameStateMachine stateMachine)
+        public SceneService(IGameStateMachine stateMachine, IInputService inputService)
         {
             _sceneLoader = new();
             _stateMachine = stateMachine;
+            _inputService = inputService;
         }
 
         public async UniTask LoadFirstScene(string scene)
@@ -35,6 +38,7 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
 
         public async UniTask LoadScene(string nextScene, Action<string> callback = null)
         {
+            _inputService.Disable();
             LoadingUI loadUI = await InitLoadingScene();
             await _sceneLoader.LoadBase(nextScene, loadUI.slider, async (loadingScene) =>
             {
@@ -60,6 +64,7 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
             await SceneManager.UnloadSceneAsync(SceneNames.Loading);
             GC.Collect();
             OnSceneLoaded?.Invoke();
+            _inputService.Enable();
         }
 
 

@@ -24,10 +24,8 @@ namespace Assets.Project.CodeBase.Infostructure.Factory.CubeFactory
 
         public FieldCell CreateFieldCell(int id)
         {
-            var item = _staticData.ForCubeData(id);
-            Transform viewObstacle = Object.Instantiate(item.basePrefab);
+            Transform viewObstacle = Object.Instantiate(_staticData.ForCubeData(id).basePrefab);
             var it = viewObstacle.GetComponent<FieldCell>();
-            it.Construct(item);
             return it;
         }
     }

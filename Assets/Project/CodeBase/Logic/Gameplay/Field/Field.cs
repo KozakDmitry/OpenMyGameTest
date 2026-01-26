@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,7 +46,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             viewCell.SetDependency(this);
             viewCell.SetGridPosition(position);
             viewCell.SetLayer(position.y * (_matrix.Width - 1) + position.x);
-            viewCell.SetSize(_cellWidth);
+            viewCell.SetSize(_cellWidth * 0.5f);
             _matrix[position] = viewCell;
             _cells.Add(viewCell);
         }
@@ -54,6 +55,77 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         {
             float halfCellWidth = _cellWidth * 0.5f;
             return new Vector2(cell.x * _cellWidth + halfCellWidth, cell.y * _cellWidth + halfCellWidth) + _placeOffset;
+        }
+
+        private (Vector2Int result, bool isNotUp) newDirection;
+        public void TrySwapTwoCubes(FieldCell firstCell, Vector2 secondDirection)
+        {
+            newDirection = GetDirection(firstCell.MatrixPosition, secondDirection);
+            if ((IsThereCubeAvailable(newDirection, out FieldCell secondCell)))
+            {
+                if (secondCell != null && secondCell.IsCubeAvailable())
+                {
+                    SwapCubes(firstCell, secondCell);
+
+                }
+                else
+                {
+                    SendCubeToSide(firstCell, newDirection.result);
+                }
+            }
+        }
+
+        private void SendCubeToSide(FieldCell firstCell, Vector2Int secondDirection)
+        {
+            _matrix[secondDirection] = firstCell;
+            _matrix[firstCell.MatrixPosition] = null;
+            firstCell.MoveToPoint(firstCell.Layer, secondDirection);
+        }
+
+        private void SwapCubes(FieldCell firstCell, FieldCell secondCell)
+        {
+            //Debug.Log("First: " + firstCell.MatrixPosition + "Second: " + secondCell.MatrixPosition);
+            _matrix[firstCell.MatrixPosition] = secondCell;
+            _matrix[secondCell.MatrixPosition] = firstCell;
+            int k = secondCell.Layer, f = firstCell.Layer;
+            firstCell.MoveToPoint(k, secondCell.MatrixPosition);
+            secondCell.MoveToPoint(f, firstCell.MatrixPosition);
+        }
+
+        private bool IsThereCubeAvailable((Vector2Int nextPosition, bool isNotUp) vect, out FieldCell fieldCell)
+        {
+            fieldCell = null;
+            if (vect.nextPosition.x >= 0 && vect.nextPosition.y >= 0 &&
+                vect.nextPosition.x < _matrix.Width && vect.nextPosition.y < _matrix.Height)
+            {
+                fieldCell = _matrix[vect.nextPosition];
+                if (fieldCell != null || vect.isNotUp)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private (Vector2Int result, bool isNotUp) GetDirection(Vector2Int position, Vector2 dir)
+        {
+            bool isNotUp = true;
+            if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
+            {
+                if (dir.x > 0) position.x++;
+                else position.x--;
+            }
+            else
+            {
+                if (dir.y > 0)
+                {
+                    isNotUp = false;
+                    position.y++;
+                }
+                else position.y--;
+            }
+            return (position, isNotUp);
         }
 
         public Vector2Int GetCellByPos(Vector3 worldPosition)

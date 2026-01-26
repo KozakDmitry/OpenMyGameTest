@@ -2,6 +2,7 @@
 using Assets.Project.CodeBase.Infostructure.AssetManagement;
 using Assets.Project.CodeBase.Infostructure.Factory.BackgroundFactory;
 using Assets.Project.CodeBase.Infostructure.Factory.CubeFactory;
+using Assets.Project.CodeBase.Infostructure.Input;
 using Assets.Project.CodeBase.Infostructure.Services;
 using Assets.Project.CodeBase.Infostructure.Services.ProgressService;
 using Assets.Project.CodeBase.Infostructure.Services.SaveService;
@@ -27,14 +28,16 @@ namespace Assets.Project.CodeBase.Infostructure.States
         public void RegisterServices()
         {
             RegisterStaticData();
+            _services.RegisterSingle<IInputService>(new InputService());
             _services.RegisterSingle<IProgressService>(new ProgressService());
             _services.RegisterSingle<IAssets>(new AssetManager());
             _services.RegisterSingle<ISaveService>(new SaveService(_services.Single<IProgressService>()));
             _services.RegisterSingle<IBackgroundFactory>(new BackgroundFactory(_services.Single<IStaticDataService>(),
                                                                                _services.Single<IAssets>()));
             _services.RegisterSingle<ICubeFactory>(new CubeFactory(_services.Single<IStaticDataService>(),
-                                                                               _services.Single<IAssets>()));
-            _services.RegisterSingle<ISceneService>(new SceneService(_stateMachine));
+                                                                   _services.Single<IAssets>()));
+            _services.RegisterSingle<ISceneService>(new SceneService(_stateMachine, 
+                                                                     _services.Single<IInputService>()));
         }
 
 

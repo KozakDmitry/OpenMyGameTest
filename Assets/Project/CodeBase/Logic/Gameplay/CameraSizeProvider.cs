@@ -18,7 +18,8 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
         {
             AllServices.Container.DeleteObject(this);
         }
-
+        public Vector3 ScreenToWorldPoint2D(Vector2 screenPosition) =>
+            _cam.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0));
         public Bounds GetFieldSize()
         {
             Vector2 pos = _cam.transform.position;

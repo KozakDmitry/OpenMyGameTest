@@ -187,9 +187,9 @@ Canvas:
   m_GameObject: {fileID: 8952360}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 828247342}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 35
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -199,7 +199,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1000
   m_TargetDisplay: 0
 --- !u!224 &8952364
 RectTransform:
@@ -270,10 +270,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 78607638352111648, guid: 490d79f30f3797b4bb82ae0e8a4035ff, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -10855.384
-      objectReference: {fileID: 0}
-    - target: {fileID: 78607638352111648, guid: 490d79f30f3797b4bb82ae0e8a4035ff, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
@@ -307,6 +303,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 78607638352111648, guid: 490d79f30f3797b4bb82ae0e8a4035ff, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8964349155192034569, guid: 490d79f30f3797b4bb82ae0e8a4035ff, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9027253634302361846, guid: 490d79f30f3797b4bb82ae0e8a4035ff, type: 3}
