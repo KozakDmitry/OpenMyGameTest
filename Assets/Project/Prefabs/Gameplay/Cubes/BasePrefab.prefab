@@ -107,6 +107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Assets.Project.CodeBase.Logic.Gameplay.Field.FieldCell
   root: {fileID: 6542037618096021933}
   spriteRenderer: {fileID: 443366102954485845}
+  animator: {fileID: 5909759663681606464}
 --- !u!95 &5909759663681606464
 Animator:
   serializedVersion: 7

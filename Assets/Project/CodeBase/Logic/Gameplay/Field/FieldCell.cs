@@ -1,29 +1,46 @@
-﻿using Assets.Project.CodeBase.StaticData.Cubes;
+﻿using Assets.Project.CodeBase.Extentions;
+using Assets.Project.CodeBase.StaticData.Cubes;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
+using System.Threading.Tasks;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 {
     public class FieldCell : BaseObject
     {
-
+        private const string DESTROY_TRIGGER_NAME = "ToDestroy";
         [SerializeField]
         private SpriteRenderer spriteRenderer;
+        [SerializeField]
+        private Animator animator;
 
         private IField _field;
         private CubeStatus cubeStatus;
         private Vector2Int matrixPosition;
-        private int layer;
+        private int layer,
+                    id;
 
 
         public int Layer => layer;
+
+        public int Id => id;
         public CubeStatus CubeStatus => cubeStatus;
         public Vector2Int MatrixPosition => matrixPosition;
 
+
+        public void Construct(int id) =>
+            this.id = id;
+
+
+
+
+
         public void SetDependency(IField field) =>
             _field = field;
-        
+
         public void SetLayer(int layer)
         {
             this.layer = layer;
@@ -38,7 +55,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
         public void SetSize(float size) =>
             transform.localScale = new Vector3(size, size, size);
-        public void SetPosition(Vector2 gridToPosition) => 
+        public void SetPosition(Vector2 gridToPosition) =>
             localPosition = gridToPosition;
 
 
@@ -50,15 +67,12 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
         public override void Remove()
         {
-            if (_field != null)
-            {
-                _field.RemoveView(this);
-            }
-
+            _field?.RemoveView(this);
+            
             base.Remove();
         }
 
-        public void MoveToPoint(int Layer,Vector2Int matrixPosition)
+        public void MoveToPoint(int Layer, Vector2Int matrixPosition)
         {
             cubeStatus = CubeStatus.Moving;
             SetLayer(Layer);
@@ -66,10 +80,17 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             {
                 this.matrixPosition = matrixPosition;
                 cubeStatus = CubeStatus.Idle;
-
-                //Тут надо буде чекать на нормалайз
+                _field.OnMoveEnd(this);
             });
 
+        }
+
+        public async void StartDestroing()
+        {
+            cubeStatus = CubeStatus.Destroying;
+            animator.SetTrigger(DESTROY_TRIGGER_NAME);
+            await animator.AwaitAnimationComplete();
+            Remove();
         }
     }
 

@@ -21,6 +21,15 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         private Vector2 _placeOffset;
         private Vector2 _cellSize;
 
+        public delegate void OnFieldCellMoved();
+        public event OnFieldCellMoved OnCellChanged;
+
+        public List<FieldCell> GetFieldCells =>
+            _cells;
+
+        public Grid<FieldCell> GetMatrix =>
+            _matrix;
+
         public void SetupFieldSize(Bounds rect)
         {
             fieldBounds = rect;
@@ -63,10 +72,12 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             newDirection = GetDirection(firstCell.MatrixPosition, secondDirection);
             if ((IsThereCubeAvailable(newDirection, out FieldCell secondCell)))
             {
-                if (secondCell != null && secondCell.IsCubeAvailable())
+                if (secondCell != null)
                 {
-                    SwapCubes(firstCell, secondCell);
-
+                    if (secondCell.IsCubeAvailable())
+                    {
+                        SwapCubes(firstCell, secondCell);
+                    }
                 }
                 else
                 {
@@ -77,6 +88,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
         private void SendCubeToSide(FieldCell firstCell, Vector2Int secondDirection)
         {
+            //Debug.Log("side: " + "First: " + firstCell.MatrixPosition + " Second: " + secondDirection);
             _matrix[secondDirection] = firstCell;
             _matrix[firstCell.MatrixPosition] = null;
             firstCell.MoveToPoint(firstCell.Layer, secondDirection);
@@ -84,7 +96,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
         private void SwapCubes(FieldCell firstCell, FieldCell secondCell)
         {
-            //Debug.Log("First: " + firstCell.MatrixPosition + "Second: " + secondCell.MatrixPosition);
+           //Debug.Log("First: " + firstCell.MatrixPosition + "Second: " + secondCell.MatrixPosition);
             _matrix[firstCell.MatrixPosition] = secondCell;
             _matrix[secondCell.MatrixPosition] = firstCell;
             int k = secondCell.Layer, f = firstCell.Layer;
@@ -107,6 +119,19 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
             return false;
         }
+        public void StartDestroy(FieldCell fieldCell)
+        {
+            fieldCell.StartDestroing();
+        }
+
+
+        public void StartToFall(FieldCell fieldCell)
+        {
+           
+        }
+
+        public void OnMoveEnd(FieldCell fieldCell) => 
+            OnCellChanged?.Invoke();
 
         private (Vector2Int result, bool isNotUp) GetDirection(Vector2Int position, Vector2 dir)
         {
@@ -144,11 +169,13 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             var removeIndex = _cells.IndexOf(viewCell);
             if (removeIndex > 0)
             {
+                _matrix[viewCell.MatrixPosition] = null;
                 _cells.RemoveAt(removeIndex);
+                OnCellChanged?.Invoke();
             }
         }
 
-        public void ClearCells()
+        private void ClearCells()
         {
             for (int i = _cells.Count - 1; i >= 0; i--)
             {
@@ -158,6 +185,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             _cells.Clear();
         }
 
-
+ 
     }
 }
