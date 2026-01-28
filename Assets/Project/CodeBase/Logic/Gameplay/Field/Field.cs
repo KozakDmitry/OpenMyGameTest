@@ -1,4 +1,6 @@
-﻿using DG.Tweening;
+﻿using Assets.Project.CodeBase.Infostructure.Services;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +45,9 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             _cellWidth = Math.Min(fieldBounds.size.x / size.x, fieldBounds.size.y / size.y);
             _cellSize = new Vector2(_cellWidth, _cellWidth);
             _placeOffset = (Vector2)fieldBounds.min + (fieldSize - _cellSize * size) * 0.5f;
+            AllServices.Container.RegisterObject(this); 
         }
+
 
         public void AddCell(FieldCell viewCell, Vector2Int position)
         {
@@ -88,20 +92,18 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
         private void SendCubeToSide(FieldCell firstCell, Vector2Int secondDirection)
         {
-            //Debug.Log("side: " + "First: " + firstCell.MatrixPosition + " Second: " + secondDirection);
             _matrix[secondDirection] = firstCell;
             _matrix[firstCell.MatrixPosition] = null;
-            firstCell.MoveToPoint(firstCell.Layer, secondDirection);
+            firstCell.MoveToPoint(firstCell.Layer, secondDirection, CubeStatus.Moving);
         }
 
         private void SwapCubes(FieldCell firstCell, FieldCell secondCell)
         {
-           //Debug.Log("First: " + firstCell.MatrixPosition + "Second: " + secondCell.MatrixPosition);
             _matrix[firstCell.MatrixPosition] = secondCell;
             _matrix[secondCell.MatrixPosition] = firstCell;
             int k = secondCell.Layer, f = firstCell.Layer;
-            firstCell.MoveToPoint(k, secondCell.MatrixPosition);
-            secondCell.MoveToPoint(f, firstCell.MatrixPosition);
+            firstCell.MoveToPoint(k, secondCell.MatrixPosition, CubeStatus.Moving);
+            secondCell.MoveToPoint(f, firstCell.MatrixPosition, CubeStatus.Moving);
         }
 
         private bool IsThereCubeAvailable((Vector2Int nextPosition, bool isNotUp) vect, out FieldCell fieldCell)
@@ -119,18 +121,32 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
             return false;
         }
-        public void StartDestroy(FieldCell fieldCell)
+
+
+        public async void StartDestroyCells(List<FieldCell> fieldCell)
         {
-            fieldCell.StartDestroing();
+            List<UniTask> awaitDestroy = new List<UniTask>();
+            for (int i = 0; i < fieldCell.Count; i++)
+            {
+                awaitDestroy.Add(fieldCell[i].StartDestroing());
+            }
+            await UniTask.WhenAll(awaitDestroy);
+            OnCellChanged?.Invoke();
         }
 
 
-        public void StartToFall(FieldCell fieldCell)
+        public void StartToFall((FieldCell cell, int height) fieldCell)
         {
-           
+            Vector2Int newPosition = new Vector2Int(fieldCell.cell.MatrixPosition.x, fieldCell.height);
+            _matrix[fieldCell.cell.MatrixPosition] = null;
+            _matrix[newPosition] = fieldCell.cell;
+            fieldCell.cell.MoveToFall(GetLayerForCell(newPosition), newPosition);
         }
 
-        public void OnMoveEnd(FieldCell fieldCell) => 
+        private int GetLayerForCell(Vector2Int newPosition) => 
+            newPosition.x + newPosition.y * (_matrix.Width - 1);
+
+        public void OnMoveEnd(FieldCell fieldCell) =>
             OnCellChanged?.Invoke();
 
         private (Vector2Int result, bool isNotUp) GetDirection(Vector2Int position, Vector2 dir)
@@ -160,7 +176,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             {
                 return new Vector2Int(-1, -1);
             }
-
             return new Vector2Int((int)deltaCell.x, (int)deltaCell.y);
         }
 
@@ -171,7 +186,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             {
                 _matrix[viewCell.MatrixPosition] = null;
                 _cells.RemoveAt(removeIndex);
-                OnCellChanged?.Invoke();
+                //OnCellChanged?.Invoke();
             }
         }
 
@@ -181,10 +196,9 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             {
                 _cells[i].Remove();
             }
-
             _cells.Clear();
         }
 
- 
+
     }
 }

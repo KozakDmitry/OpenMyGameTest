@@ -1,4 +1,5 @@
-﻿using Assets.Project.CodeBase.Logic.Shared;
+﻿using Assets.Project.CodeBase.Infostructure.Services;
+using Assets.Project.CodeBase.Logic.Shared;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
@@ -9,34 +10,35 @@ using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 {
-    public class FieldNormalizer : InitializableWindow
+    public class FieldNormalizer : InitializableWindow, IFieldNormalizer
     {
         private IField _field;
 
         private List<FieldCell> lastCheckedCells;
         private List<FieldCell> potencialCombinations;
-        private List<FieldCell> cellsToLand;
+        private List<(FieldCell, int)> cellsToLand;
         private bool IsNormalazing;
 
         public override UniTask Initialize()
         {
+            AllServices.Container.RegisterObject(this);
             _field = GetComponent<IField>();
             IsNormalazing = false;
             lastCheckedCells = new();
             potencialCombinations = new();
             cellsToLand = new();
-            _field.OnCellChanged += TryToNormalize;
             return base.Initialize();
 
         }
-
         private void OnDestroy()
         {
             if (_field != null)
             {
-                _field.OnCellChanged -= TryToNormalize;
+                AllServices.Container.DeleteObject(this);
+                AllServices.Container.DeleteObject(_field);
             }
         }
+
 
         public void TryToNormalize()
         {
@@ -49,8 +51,26 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                 IsNormalazing = true;
                 lastCheckedCells.Clear();
                 potencialCombinations.Clear();
+                cellsToLand.Clear();
             }
             var _matrix = _field.GetMatrix;
+
+
+            int r = 0;
+            for (int i = 0; i < _matrix.Width; i++)
+            {
+                r = 0;
+                if (_matrix[i, r] == null)
+                {
+                    SetAllToDown(_matrix, i, ref r);
+                }
+            }
+            for (int i = 0; i < cellsToLand.Count; i++)
+            {
+                _field.StartToFall(cellsToLand[i]);
+            }
+
+
             for (int i = 0; i < _matrix.Height; i++)
             {
                 for (int k = 0; k < _matrix.Width; k++)
@@ -60,11 +80,16 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                         CheckCells();
                         continue;
                     }
-                    Debug.Log(_matrix[k, i].MatrixPosition);
-                    if (_matrix[k, i].CubeStatus == CubeStatus.Idle &&
-                        (lastCheckedCells.Count == 0 || _matrix[k, i].Id == lastCheckedCells[^1].Id))
+                    if ((lastCheckedCells.Count == 0 || _matrix[k, i].Id == lastCheckedCells[^1].Id))
                     {
-                        lastCheckedCells.Add(_matrix[k, i]);
+                        if (_matrix[k, i].CubeStatus == CubeStatus.Idle)
+                        {
+                            lastCheckedCells.Add(_matrix[k, i]);
+                        }
+                        else
+                        {
+                            CheckCells();
+                        }
                     }
                     else
                     {
@@ -97,40 +122,29 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                 }
                 CheckCells();
             }
-            for (int i = 0; i < potencialCombinations.Count; i++)
-            {
-                _field.StartDestroy(potencialCombinations[i]);
-            }
+            _field.StartDestroyCells(potencialCombinations);
 
-            int r = 0;
-            for (int i = 0; i < _matrix.Width; i++)
-            {
-                r = 0;
-                if (_matrix[i, r] == null)
-                {
-                    SetAllToDown(_matrix, i, ref r);
-                }
-            }
-            for (int i = 0; i < cellsToLand.Count; i++)
-            {
-                _field.StartToFall(cellsToLand[i]);
-            }
+
 
             IsNormalazing = false;
         }
 
         private void SetAllToDown(Grid<FieldCell> matrix, int i, ref int k)
         {
-            for (; k < matrix.Height; i++)
+            int startHeight = k;
+            k++;
+            for (; k < matrix.Height; k++)
             {
-                if (matrix[i, k] != null && matrix[i, k].IsCubeAvailable())
+                if (matrix[i, k] != null)
                 {
-                    cellsToLand.Add(matrix[i, k]);
+                    if (matrix[i, k].IsCubeAvailable())
+                    {
+                        cellsToLand.Add((matrix[i, k], startHeight));
+                        matrix[i, k].SetCubeStasus(CubeStatus.Falling);
+                    }
+                    startHeight = k;
                 }
-                else
-                {
-                    return;
-                }
+
             }
         }
 
@@ -138,7 +152,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         {
             if (lastCheckedCells.Count >= 3)
             {
-                Debug.Log("Cells to destroy: " + lastCheckedCells.Count);
                 for (int i = 0; i < lastCheckedCells.Count; i++)
                 {
                     potencialCombinations.Add(lastCheckedCells[i]);

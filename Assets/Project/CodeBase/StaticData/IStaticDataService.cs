@@ -1,4 +1,5 @@
 ﻿using Assets.Project.CodeBase.Infostructure.Services;
+using Assets.Project.CodeBase.StaticData.Balloons;
 using Assets.Project.CodeBase.StaticData.Cubes;
 using Assets.Project.CodeBase.StaticData.Field;
 using Assets.Project.CodeBase.StaticData.Input;
@@ -12,6 +13,7 @@ namespace Assets.Project.CodeBase.StaticData
         InputConfigData ForInputConfig();
         CubeData ForCubeData(int id);
         LevelData ForFieldData();
+        BalloonsData ForBallonsData();
         void Load();
     }
 }

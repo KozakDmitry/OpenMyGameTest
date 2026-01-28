@@ -1,20 +1,9 @@
-﻿using Assets.Project.CodeBase.Logic.Shared;
-using Cysharp.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UnityEngine;
 
 namespace Assets.Project.CodeBase.UI.GameScreen
 {
-    public class BackGroundUI :InitializableWindow
+    public class BackGroundUI : MonoBehaviour
     {
-        
-        public override UniTask Initialize()
-        {
-
-            return base.Initialize();
-        }
+      
     }
 }

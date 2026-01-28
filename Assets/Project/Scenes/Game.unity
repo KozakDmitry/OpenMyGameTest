@@ -311,6 +311,50 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8139408226214563533, guid: a890abe5ba6b3dd40a4fae9c159e61c0, type: 3}
   m_PrefabInstance: {fileID: 8283340904644439151}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1361419376
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1361419377}
+  - component: {fileID: 1361419378}
+  m_Layer: 0
+  m_Name: BackGround
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1361419377
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361419376}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1486284143}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1361419378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361419376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bf63b312a1d3e74db87b4058e50e5f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Assets.Project.CodeBase.Logic.Gameplay.BackGround.BalloonsController
 --- !u!1 &1481638738
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,6 +469,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1481638739}
+  - {fileID: 1361419377}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1521335144
@@ -627,6 +672,7 @@ MonoBehaviour:
   - {fileID: 1481638740}
   - {fileID: 1481638741}
   - {fileID: 1481638743}
+  - {fileID: 1361419378}
 --- !u!1001 &3870163612770704415
 PrefabInstance:
   m_ObjectHideFlags: 0
