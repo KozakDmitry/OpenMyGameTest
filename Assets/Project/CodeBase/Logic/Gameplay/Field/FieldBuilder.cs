@@ -43,6 +43,10 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         }
         public void UpdateProgress(PlayerProgress progress)
         {
+            if (_field.GetFieldCells.Count == 0)
+            {
+                return;
+            }
             List<LevelConditions> conditions = new();
             foreach (var item in _field.GetFieldCells)
             {

@@ -30,6 +30,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             return base.Initialize();
 
         }
+        
         private void OnDestroy()
         {
             if (_field != null)
@@ -67,17 +68,12 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
                 }
             }
+
             if (cellsToLand.Count > 0)
             {
                 isSmtgNormalized = true;
-                for (int i = 0; i < cellsToLand.Count; i++)
-                {
-                    _field.StartToFall(cellsToLand[i]);
-                }
-
+                _field.StartToFall(cellsToLand);
             }
-
-
 
 
             for (int i = 0; i < _matrix.Height; i++)
@@ -155,8 +151,12 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                     {
                         cellsToLand.Add((matrix[i, k], startHeight));
                         matrix[i, k].SetCubeStasus(CubeStatus.Falling);
+                        startHeight++;
                     }
-                    startHeight = k;
+                    else
+                    {
+                        startHeight = k;
+                    }
                 }
 
             }
@@ -169,7 +169,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                 for (int i = 0; i < lastCheckedCells.Count; i++)
                 {
                     potencialCombinations.Add(lastCheckedCells[i]);
-                    lastCheckedCells[i].SetCubeStasus(CubeStatus.Destroying);
                 }
             }
 

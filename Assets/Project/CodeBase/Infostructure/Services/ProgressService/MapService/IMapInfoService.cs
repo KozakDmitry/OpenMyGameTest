@@ -8,6 +8,7 @@ namespace Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapServ
     public interface IMapInfoService : IService
     {
         void ChangeLevelToNext();
+        void ClearSaveLevel();
         int GetCurrentLevel();
         LevelInfo GetCurrentLevelData();
         FieldConfigData GetFieldConfig();

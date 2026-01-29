@@ -6,11 +6,7 @@ using Assets.Project.CodeBase.Infostructure.Services.SceneService;
 using Assets.Project.CodeBase.Logic.Gameplay.Field;
 using Assets.Project.CodeBase.Logic.Shared;
 using Cysharp.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Assets.Project.CodeBase.Logic.Gameplay
 {
@@ -31,6 +27,11 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
             _field.OnCellChanged += CheckField;
         }
 
+        public override UniTask AfterInitialize()
+        {
+            CheckField();
+            return base.AfterInitialize();
+        }
         private void OnDestroy()
         {
             if (_field != null)
@@ -59,6 +60,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
         private void ChangeLevel()
         {
             _mapInfoService.ChangeLevelToNext();
+            _saveService.Save();
             _sceneService.LoadScene(SceneNames.Game);
         }
     }

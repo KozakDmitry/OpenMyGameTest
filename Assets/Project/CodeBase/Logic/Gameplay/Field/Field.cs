@@ -44,7 +44,8 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             Vector2 fieldSize = fieldBounds.size;
             _cellWidth = Math.Min(fieldBounds.size.x / size.x, fieldBounds.size.y / size.y);
             _cellSize = new Vector2(_cellWidth, _cellWidth);
-            _placeOffset = (Vector2)fieldBounds.min + (fieldSize - _cellSize * size) * 0.5f;
+            _placeOffset = new Vector2(fieldBounds.min.x + (fieldBounds.size.x - _cellSize.x * size.x) * 0.5f,
+                                       fieldBounds.min.y);
             AllServices.Container.RegisterObject(this as IField);
 
         }
@@ -142,13 +143,18 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             OnCellChanged?.Invoke();
         }
 
-
-        public async void StartToFall((FieldCell cell, int height) fieldCell)
+        private Vector2Int newPosition;
+        public async void StartToFall(List<(FieldCell cell, int height)> fieldCells)
         {
-            Vector2Int newPosition = new Vector2Int(fieldCell.cell.MatrixPosition.x, fieldCell.height);
-            _matrix[fieldCell.cell.MatrixPosition] = null;
-            _matrix[newPosition] = fieldCell.cell;
-            await fieldCell.cell.MoveToFallAsync(GetLayerForCell(newPosition), newPosition);
+            List<UniTask> awaitDestroy = new List<UniTask>();
+            for (int i = 0; i < fieldCells.Count; i++)
+            {
+                newPosition = new Vector2Int(fieldCells[i].cell.MatrixPosition.x, fieldCells[i].height);
+                _matrix[fieldCells[i].cell.MatrixPosition] = null;
+                _matrix[newPosition] = fieldCells[i].cell;
+                awaitDestroy.Add(fieldCells[i].cell.MoveToFallAsync(GetLayerForCell(newPosition), newPosition));
+            }
+            await awaitDestroy;
             OnCellChanged?.Invoke();
         }
 

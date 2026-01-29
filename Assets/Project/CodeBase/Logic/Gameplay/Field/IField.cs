@@ -17,7 +17,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         void SetupFieldSize(Bounds rect);
         void InitializeGrid(Vector2Int size);
         void TrySwapTwoCubes(FieldCell result, Vector2 secondDirection);
-        void StartToFall((FieldCell cell, int height) value);
+        void StartToFall(List<(FieldCell cell, int height)> value);
         void OnMoveEnd(FieldCell fieldCell);
         void StartDestroyCells(List<FieldCell> fieldCell);
     }

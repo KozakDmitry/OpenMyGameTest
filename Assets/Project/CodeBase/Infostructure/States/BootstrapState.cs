@@ -10,7 +10,6 @@ using Assets.Project.CodeBase.Infostructure.Services.SaveService;
 using Assets.Project.CodeBase.Infostructure.Services.SceneService;
 using Assets.Project.CodeBase.StaticData;
 using Cysharp.Threading.Tasks;
-using UnityEditor.MPE;
 
 namespace Assets.Project.CodeBase.Infostructure.States
 {

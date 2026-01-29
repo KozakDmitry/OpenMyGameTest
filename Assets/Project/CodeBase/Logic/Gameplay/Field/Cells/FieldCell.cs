@@ -1,10 +1,6 @@
 ﻿using Assets.Project.CodeBase.Extentions;
-using Assets.Project.CodeBase.StaticData.Cubes;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using System;
-using System.Threading.Tasks;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.Field

@@ -33,7 +33,7 @@ namespace Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapServ
         }
         public void ChangeLevelToNext()
         {
-            if (_progressService.Progress.mapInfo.currentLevelId >= _levelData.levelInfo.Count)
+            if (_progressService.Progress.mapInfo.currentLevelId >= _levelData.levelInfo.Count - 1)
             {
                 _progressService.Progress.mapInfo.currentLevelId = 0;
             }
@@ -41,7 +41,7 @@ namespace Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapServ
             {
                 _progressService.Progress.mapInfo.currentLevelId++;
             }
-            _progressService.Progress.mapInfo.levelCondition = null;
+            _progressService.Progress.mapInfo.levelCondition.Clear();
         }
 
         public int GetCurrentLevel() =>
@@ -67,6 +67,11 @@ namespace Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapServ
         {
             save = _progressService.Progress.mapInfo.levelCondition;
             return _progressService.Progress.mapInfo.levelCondition.Count > 0;
+        }
+
+        public void ClearSaveLevel()
+        {
+            _progressService.Progress.mapInfo.levelCondition.Clear();
         }
     }
 }

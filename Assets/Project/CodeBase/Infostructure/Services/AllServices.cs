@@ -1,7 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
-using Unity.Android.Gradle.Manifest;
 
 namespace Assets.Project.CodeBase.Infostructure.Services
 {
