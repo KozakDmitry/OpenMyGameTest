@@ -1,6 +1,7 @@
 ﻿using Assets.Project.CodeBase.Extentions;
 using Assets.Project.CodeBase.Infostructure.Services;
 using Assets.Project.CodeBase.Infostructure.Services.ProgressService;
+using Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapService;
 using Assets.Project.CodeBase.Infostructure.Services.SceneService;
 using Assets.Project.CodeBase.Logic.Shared;
 using Cysharp.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Assets.Project.CodeBase.UI.GameScreen
                        nextLevelButton;
 
         private ISceneService _sceneService;
-        private IProgressService _progressService;
+        private IMapInfoService _mapInfoService;
         public override UniTask Initialize()
         {
             _sceneService = AllServices.Container.Single<ISceneService>();
@@ -27,6 +28,7 @@ namespace Assets.Project.CodeBase.UI.GameScreen
 
         private void GoToNextLevel()
         {
+            _mapInfoService.ChangeLevelToNext();
             _sceneService.LoadScene(SceneNames.Game);
         }
 

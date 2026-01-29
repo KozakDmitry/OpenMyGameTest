@@ -1,5 +1,7 @@
 ﻿
 
+using Assets.Project.CodeBase.StaticData;
+using Assets.Project.CodeBase.StaticData.Input;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,12 +18,18 @@ namespace Assets.Project.CodeBase.Infostructure.Input
         public event EndT OnEndEvent;
 
         private TouchControls _touchControls;
-        public InputService()
+        private InputConfigData _inputSettings;
+        private IStaticDataService _staticDataService;
+        public InputService(IStaticDataService staticData)
         {
+            _staticDataService = staticData;
+            _inputSettings = _staticDataService.ForInputConfig();
             _touchControls = new TouchControls();
             _touchControls.Enable();
             RegisterEvents();
         }
+        public InputConfigData GetInputConfig() => 
+            _inputSettings;
 
         private void RegisterEvents()
         {
@@ -45,10 +53,12 @@ namespace Assets.Project.CodeBase.Infostructure.Input
             }
         }
 
-        public void Disable() => 
+        public void Disable() =>
             _touchControls.Disable();
 
-        public void Enable() => 
+        public void Enable() =>
             _touchControls.Enable();
+
+
     }
 }

@@ -1,9 +1,5 @@
-﻿using Assets.Project.CodeBase.Logic.Gameplay.Field;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Project.CodeBase.Logic.Gameplay;
+using Assets.Project.CodeBase.Logic.Gameplay.BackGround;
 using UnityEngine;
 
 namespace Assets.Project.CodeBase.Data.Balloons
@@ -11,19 +7,15 @@ namespace Assets.Project.CodeBase.Data.Balloons
     public abstract class BaseBalloon : BaseObject
     {
 
-        private float amplitude = 0.5f;
-        private float frequency = 1.0f;
-        private float speed = 1.0f;
+      
 
-        private Vector2 baseVelocity;
-        private float startTime;
+        protected IBalloonsController _balloonController;
+        protected  Bounds bounds;
 
-
-
-        public virtual void Initialize()
+        public virtual void Initialize(IBalloonsController balloonsController, Bounds cameraBounds)
         {
-            //startTime = Time.time;
-            //baseVelocity = Unity.Mathematics.Random.insideUnitCircle.normalized * speed;
+            _balloonController = balloonsController;
+            bounds = cameraBounds;
         }
 
 
@@ -36,12 +28,14 @@ namespace Assets.Project.CodeBase.Data.Balloons
 
         protected virtual void CustomUpdate()
         {
-            float t = Time.time - startTime;
-            float offset = amplitude * Mathf.Sin(frequency * t);
+           
+        }
 
-            //transform.position += new Vector3(baseVelocity.x, baseVelocity.y + offset, 0) * Time.deltaTime;
-            //if (transform.position.y < -screenHeight / 2f)
-            //    Destroy(gameObject);
+       
+
+        protected virtual void OnExitScreen()
+        {
+            _balloonController?.Remove(this);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using Assets.Project.CodeBase.Data.Balloons;
 using Assets.Project.CodeBase.Infostructure.Factory.BackgroundFactory;
 using Assets.Project.CodeBase.Infostructure.Services;
+using Assets.Project.CodeBase.Infostructure.Services.ProgressService.BallonsService;
 using Assets.Project.CodeBase.Logic.Shared;
 using Assets.Project.CodeBase.StaticData;
 using Assets.Project.CodeBase.StaticData.Balloons;
@@ -16,27 +17,29 @@ using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.BackGround
 {
-    public class BalloonsController : InitializableWindow
+    public class BalloonsController : InitializableWindow, IBalloonsController
     {
-        private IStaticDataService _staticDataService;
+
         private IBalloonsFactory _backgroundFactory;
-        private CameraSizeProvider _cameraSizeProvider;
+        private IBalloonsService _balloonService;
+        private ICameraSizeProvider _cameraSizeProvider;
         private CancellationTokenSource cts;
 
-        private BalloonsData _ballonsData;
+
         private List<BaseBalloon> _movingBalloons;
+        private Bounds cameraBounds;
         public async override UniTask Initialize()
         {
-            _staticDataService = AllServices.Container.Single<IStaticDataService>();
             _backgroundFactory = AllServices.Container.Single<IBalloonsFactory>();
-            _cameraSizeProvider = await AllServices.Container.SingleAwait<CameraSizeProvider>();
-            _ballonsData = _staticDataService.ForBallonsData();
+            _balloonService = AllServices.Container.Single<IBalloonsService>();
+            _cameraSizeProvider = await AllServices.Container.SingleAwait<ICameraSizeProvider>();
             _movingBalloons = new();
+            cameraBounds = _cameraSizeProvider.GetCameraBounds();
         }
         public async override UniTask AfterInitialize()
         {
-            //StartToSpawnBallons();
             await base.AfterInitialize();
+            StartToSpawnBallons();
         }
 
         private async void StartToSpawnBallons()
@@ -46,11 +49,13 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.BackGround
             {
                 while (!cts.Token.IsCancellationRequested)
                 {
-                    if (_ballonsData.spawnSettings.maxBallonsAvailable > _movingBalloons.Count)
+                    await UniTask.Delay(_balloonService.GetRandomSpawnTime());
+                    if (_balloonService.GetCurrentSpawnSettings().maxBallonsAvailable > _movingBalloons.Count)
                     {
-                        _movingBalloons.Add(_backgroundFactory.CreateBallon(GetRandomBallon()));
+                        _movingBalloons.Add(_backgroundFactory.CreateBallon(_balloonService.GetRandomBallon(), transform));
+                        _movingBalloons[^1].Initialize(this, cameraBounds);
+
                     }
-                    await UniTask.Delay(GetRandomTime());
                 }
             }
             catch (Exception ex)
@@ -59,11 +64,13 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.BackGround
             }
         }
 
-        private MovableBalloon GetRandomBallon() =>
-            _ballonsData.ballons[UnityEngine.Random.Range(0, _ballonsData.ballons.Count)];
 
-        private int GetRandomTime() =>
-            UnityEngine.Random.Range(_ballonsData.spawnSettings.randomTimeRange[0], _ballonsData.spawnSettings.randomTimeRange[1]);
+        public void Remove(BaseBalloon baseBalloon)
+        {
+            _movingBalloons.Remove(baseBalloon);
+            Destroy(baseBalloon);
+        }
+
 
         private void OnDestroy()
         {
@@ -72,5 +79,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.BackGround
             cts = null;
         }
 
+     
     }
 }

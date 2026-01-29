@@ -1,14 +1,16 @@
 ﻿using Assets.Project.CodeBase.Extentions;
-using Assets.Project.CodeBase.Infostructure.AssetManagement;
 using Assets.Project.CodeBase.Infostructure.Factory.BackgroundFactory;
 using Assets.Project.CodeBase.Infostructure.Factory.CubeFactory;
 using Assets.Project.CodeBase.Infostructure.Input;
 using Assets.Project.CodeBase.Infostructure.Services;
 using Assets.Project.CodeBase.Infostructure.Services.ProgressService;
+using Assets.Project.CodeBase.Infostructure.Services.ProgressService.BallonsService;
+using Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapService;
 using Assets.Project.CodeBase.Infostructure.Services.SaveService;
 using Assets.Project.CodeBase.Infostructure.Services.SceneService;
 using Assets.Project.CodeBase.StaticData;
 using Cysharp.Threading.Tasks;
+using UnityEditor.MPE;
 
 namespace Assets.Project.CodeBase.Infostructure.States
 {
@@ -17,6 +19,8 @@ namespace Assets.Project.CodeBase.Infostructure.States
         private readonly IGameStateMachine _stateMachine;
         private readonly AllServices _services;
         private const string Initial = SceneNames.Start;
+        private IProgressService _progressService;
+        private IStaticDataService _staticDataService;
         public BootstrapState(IGameStateMachine stateMachine, AllServices services)
         {
             _stateMachine = stateMachine;
@@ -24,28 +28,37 @@ namespace Assets.Project.CodeBase.Infostructure.States
             RegisterServices();
         }
 
+        private void RegisterInnerServices()
+        {
+            _progressService = new ProgressService();
+            RegisterStaticData();
+        }
 
         public void RegisterServices()
         {
+            RegisterInnerServices();
             RegisterStaticData();
-            _services.RegisterSingle<IInputService>(new InputService());
-            _services.RegisterSingle<IProgressService>(new ProgressService());
-            _services.RegisterSingle<IAssets>(new AssetManager());
-            _services.RegisterSingle<ISaveService>(new SaveService(_services.Single<IProgressService>()));
-            _services.RegisterSingle<IBalloonsFactory>(new BalloonsFactory(_services.Single<IStaticDataService>(),
-                                                                               _services.Single<IAssets>()));
-            _services.RegisterSingle<ICubeFactory>(new CubeFactory(_services.Single<IStaticDataService>(),
-                                                                   _services.Single<IAssets>()));
-            _services.RegisterSingle<ISceneService>(new SceneService(_stateMachine, 
+            RegisterDataServices();
+            _services.RegisterSingle<IInputService>(new InputService(_staticDataService));
+            _services.RegisterSingle<ISaveService>(new SaveService(_progressService));
+            _services.RegisterSingle<IBalloonsFactory>(new BalloonsFactory(_staticDataService));
+            _services.RegisterSingle<ICubeFactory>(new CubeFactory(_staticDataService));
+            _services.RegisterSingle<ISceneService>(new SceneService(_stateMachine,
                                                                      _services.Single<IInputService>()));
         }
 
+        private void RegisterDataServices()
+        {
+            _services.RegisterSingle<IBalloonsService>(new BalloonsService(_progressService,
+                                                                           _staticDataService));
+            _services.RegisterSingle<IMapInfoService>(new MapInfoService(_progressService,
+                                                                         _staticDataService));
+        }
 
         private void RegisterStaticData()
         {
-            IStaticDataService staticData = new StaticDataService();
-            staticData.Load();
-            _services.RegisterSingle(staticData);
+            _staticDataService = new StaticDataService();
+            _staticDataService.Load();
         }
 
 

@@ -1,32 +1,31 @@
 ﻿
 using Assets.Project.CodeBase.Data;
+using Assets.Project.CodeBase.Data.Progress;
 using Assets.Project.CodeBase.Infostructure.Services.ProgressService;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 namespace Assets.Project.CodeBase.Infostructure.Services.SaveService
 {
     public class SaveService : ISaveService
     {
         private const string SAVE_SLOT_NAME = "Save";
-        private IProgressService _progressService;
-        public List<ISavedProgressReader> ProgressReaders { get; } = new List<ISavedProgressReader>();
         public List<ISavedProgress> ProgressWriters { get; } = new List<ISavedProgress>();
 
-
+        private readonly IProgressService _progressService;
         public SaveService(IProgressService progressService) =>
             _progressService = progressService;
+
         public void RegisterWriter(ISavedProgress writer) =>
             ProgressWriters.Add(writer);
         public void RemoveWriter(ISavedProgress writer) =>
             ProgressWriters.Remove(writer);
         public void Save()
         {
-            foreach (ISavedProgress reader in ProgressReaders)
+            foreach (ISavedProgress reader in ProgressWriters)
             {
                 reader.UpdateProgress(_progressService.Progress);
             }

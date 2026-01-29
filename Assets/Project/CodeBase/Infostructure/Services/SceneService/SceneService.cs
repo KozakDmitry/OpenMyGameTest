@@ -23,21 +23,33 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
         public delegate void OnLoad();
         public event OnLoad OnSceneLoaded;
 
+        private bool _isLoading;
 
         public SceneService(IGameStateMachine stateMachine, IInputService inputService)
         {
             _sceneLoader = new();
+            _isLoading = false;
             _stateMachine = stateMachine;
             _inputService = inputService;
         }
 
         public async UniTask LoadFirstScene(string scene)
         {
+            _isLoading = true;
             await _sceneLoader.Load(scene);
+            _isLoading = false;
         }
 
         public async UniTask LoadScene(string nextScene, Action<string> callback = null)
         {
+            if (_isLoading)
+            {
+                return;
+            }
+            else
+            {
+                _isLoading = true;
+            }
             _inputService.Disable();
             LoadingUI loadUI = await InitLoadingScene();
             await _sceneLoader.LoadBase(nextScene, loadUI.slider, async (loadingScene) =>
@@ -65,6 +77,7 @@ namespace Assets.Project.CodeBase.Infostructure.Services.SceneService
             GC.Collect();
             OnSceneLoaded?.Invoke();
             _inputService.Enable();
+            _isLoading = false;
         }
 
 

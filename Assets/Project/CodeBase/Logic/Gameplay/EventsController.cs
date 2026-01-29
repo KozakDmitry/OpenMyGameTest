@@ -1,4 +1,8 @@
-﻿using Assets.Project.CodeBase.Infostructure.Services;
+﻿using Assets.Project.CodeBase.Extentions;
+using Assets.Project.CodeBase.Infostructure.Services;
+using Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapService;
+using Assets.Project.CodeBase.Infostructure.Services.SaveService;
+using Assets.Project.CodeBase.Infostructure.Services.SceneService;
 using Assets.Project.CodeBase.Logic.Gameplay.Field;
 using Assets.Project.CodeBase.Logic.Shared;
 using Cysharp.Threading.Tasks;
@@ -14,10 +18,16 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
     {
         private IField _field;
         private IFieldNormalizer _fieldNormalizer;
+        private ISaveService _saveService;
+        private IMapInfoService _mapInfoService;
+        private ISceneService _sceneService;
         public override async UniTask Initialize()
         {
             _field = await AllServices.Container.SingleAwait<IField>();
             _fieldNormalizer = await AllServices.Container.SingleAwait<IFieldNormalizer>();
+            _saveService = AllServices.Container.Single<ISaveService>();
+            _mapInfoService = AllServices.Container.Single<IMapInfoService>();
+            _sceneService = AllServices.Container.Single<ISceneService>();
             _field.OnCellChanged += CheckField;
         }
 
@@ -35,18 +45,21 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
                 ChangeLevel();
                 return;
             }
-            SaveCells();
-            _fieldNormalizer.TryToNormalize();
+            if (!_fieldNormalizer.TryToNormalize())
+            {
+                SaveCells();
+            }
         }
 
         private void SaveCells()
         {
-            throw new NotImplementedException();
+            _saveService.Save();
         }
 
         private void ChangeLevel()
         {
-            throw new NotImplementedException();
+            _mapInfoService.ChangeLevelToNext();
+            _sceneService.LoadScene(SceneNames.Game);
         }
     }
 }

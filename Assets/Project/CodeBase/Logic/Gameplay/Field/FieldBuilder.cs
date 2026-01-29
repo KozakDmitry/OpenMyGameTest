@@ -1,6 +1,10 @@
-﻿using Assets.Project.CodeBase.Infostructure.Factory.CubeFactory;
+﻿using Assets.Project.CodeBase.Data.Progress;
+using Assets.Project.CodeBase.Data.Progress.SaveData;
+using Assets.Project.CodeBase.Infostructure.Factory.CubeFactory;
 using Assets.Project.CodeBase.Infostructure.Services;
 using Assets.Project.CodeBase.Infostructure.Services.ProgressService;
+using Assets.Project.CodeBase.Infostructure.Services.ProgressService.MapService;
+using Assets.Project.CodeBase.Infostructure.Services.SaveService;
 using Assets.Project.CodeBase.Logic.Shared;
 using Assets.Project.CodeBase.StaticData;
 using Assets.Project.CodeBase.StaticData.Field;
@@ -10,25 +14,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 {
-    public class FieldBuilder : InitializableWindow
+    public class FieldBuilder : InitializableWindow, ISavedProgress
     {
         private IField _field;
-        private IStaticDataService _staticDataService;
-        private IProgressService _progressService;
+        private IMapInfoService _mapInfoService;
         private ICubeFactory _cubeFactory;
+        private ISaveService _saveService;
         public override async UniTask Initialize()
         {
-            _staticDataService = AllServices.Container.Single<IStaticDataService>();
-            _progressService = AllServices.Container.Single<IProgressService>();
             _cubeFactory = AllServices.Container.Single<ICubeFactory>();
+            _mapInfoService = AllServices.Container.Single<IMapInfoService>();
+            _saveService = AllServices.Container.Single<ISaveService>();
             _field = GetComponent<IField>();
-            await GenerateField(_staticDataService.ForFieldConfig());
+            _saveService.RegisterWriter(this);
+            await GenerateField(_mapInfoService.GetFieldConfig());
         }
-
+        private void OnDestroy()
+        {
+            if (_saveService != null)
+            {
+                _saveService.RemoveWriter(this);
+            }
+        }
+        public void UpdateProgress(PlayerProgress progress)
+        {
+            List<LevelConditions> conditions = new();
+            foreach (var item in _field.GetFieldCells)
+            {
+                conditions.Add(new LevelConditions(item.MatrixPosition, item.Id, item.CubeStatus));
+            }
+            progress.mapInfo.levelCondition = conditions;
+        }
         private async UniTask GenerateField(FieldConfigData _config)
         {
             await SetFieldSize(_config);
@@ -36,7 +57,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         }
         private async UniTask SetFieldSize(FieldConfigData _config)
         {
-            CameraSizeProvider camProvider = await AllServices.Container.SingleAwait<CameraSizeProvider>();
+            ICameraSizeProvider camProvider = await AllServices.Container.SingleAwait<ICameraSizeProvider>();
             Bounds cameraBounds = camProvider.GetCameraBounds();
             Vector2 fieldSize = new Vector2(
                 cameraBounds.size.x * _config.relativeFieldSize.x,
@@ -55,11 +76,38 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
         private void BuildField()
         {
-            BuildMatrix(GetCurrentLevel());
+            BuildMatrix(_mapInfoService.GetCurrentLevelData());
         }
         private void BuildMatrix(LevelInfo levelInfo)
         {
             _field.InitializeGrid(levelInfo.GetSize());
+            CheckSavesAndFillGrid(levelInfo);
+        }
+
+        private void CheckSavesAndFillGrid(LevelInfo levelInfo)
+        {
+            if (_mapInfoService.TryGetSavedPositions(out List<LevelConditions> save))
+            {
+                LoadSave(save);
+            }
+            else
+            {
+                LoadBase(levelInfo);
+            }
+        }
+
+        private void LoadSave(List<LevelConditions> save)
+        {
+            for (int i = 0; i < save.Count; i++)
+            {
+                var item = _cubeFactory.CreateFieldCell(save[i].id);
+                item.SetCubeStasus(save[i].status);
+                _field.AddCell(item, save[i].pos);
+            }
+        }
+
+        private void LoadBase(LevelInfo levelInfo)
+        {
             for (int i = 0; i < levelInfo.FlatMatrix.Length; i++)
             {
                 if (levelInfo.FlatMatrix[i] != 0)
@@ -68,14 +116,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                 }
             }
         }
-        private LevelInfo GetCurrentLevel()
-        {
-            return _staticDataService.ForFieldData().levelInfo
-                 .SingleOrDefault(x => x.LevelId == _progressService.Progress.levelInfo.currentLevelId)
-                 ?? _staticDataService.ForFieldData().levelInfo[0];
-        }
-
-
 
     }
 

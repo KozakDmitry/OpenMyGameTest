@@ -17,7 +17,7 @@ namespace Assets.Project.CodeBase.Extentions
             {
                 return;
             }
-            while (animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime < 1f)
+            while (animator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime <= 1f)
             {
                 await UniTask.Yield(); 
             }

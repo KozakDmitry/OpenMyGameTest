@@ -19,8 +19,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
     {
         private IField _field;
         private IInputService _inputService;
-        private IStaticDataService _staticDataService;
-        private CameraSizeProvider _cameraSizeProvider;
+        private ICameraSizeProvider _cameraSizeProvider;
 
         private float _minimumDistanceConfig,
                       _maximumTimeConfig;
@@ -33,15 +32,14 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         {
             await base.Initialize();
             _field = GetComponent<IField>();
-            _cameraSizeProvider = await AllServices.Container.SingleAwait<CameraSizeProvider>();
+            _cameraSizeProvider = await AllServices.Container.SingleAwait<ICameraSizeProvider>();
             _inputService = AllServices.Container.Single<IInputService>();
-            _staticDataService = AllServices.Container.Single<IStaticDataService>();
             ConnectSwipeDetect();
         }
 
         private void ConnectSwipeDetect()
         {
-            StaticData.Input.InputConfigData item = _staticDataService.ForInputConfig();
+            StaticData.Input.InputConfigData item = _inputService.GetInputConfig();
             _maximumTimeConfig = item.MaximumSwipeTime;
             _minimumDistanceConfig = item.MinimumSwipeRange;
             _inputService.OnStartEvent += SwipeStart;

@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace Assets.Project.CodeBase.Extentions
 {
-    public class StaticVariables
-    {
-
-    }
 
     public static class SceneNames
     {

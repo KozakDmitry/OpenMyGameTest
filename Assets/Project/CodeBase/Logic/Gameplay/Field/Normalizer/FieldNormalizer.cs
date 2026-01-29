@@ -17,11 +17,11 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         private List<FieldCell> lastCheckedCells;
         private List<FieldCell> potencialCombinations;
         private List<(FieldCell, int)> cellsToLand;
-        private bool IsNormalazing;
+        private bool IsNormalazing, isSmtgNormalized;
 
         public override UniTask Initialize()
         {
-            AllServices.Container.RegisterObject(this);
+            AllServices.Container.RegisterObject(this as IFieldNormalizer);
             _field = GetComponent<IField>();
             IsNormalazing = false;
             lastCheckedCells = new();
@@ -34,41 +34,50 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         {
             if (_field != null)
             {
-                AllServices.Container.DeleteObject(this);
+                AllServices.Container.DeleteObject(this as IFieldNormalizer);
                 AllServices.Container.DeleteObject(_field);
             }
         }
 
 
-        public void TryToNormalize()
+        public bool TryToNormalize()
         {
             if (IsNormalazing)
             {
-                return;
+                return true;
             }
             else
             {
                 IsNormalazing = true;
+                isSmtgNormalized = false;
                 lastCheckedCells.Clear();
                 potencialCombinations.Clear();
                 cellsToLand.Clear();
             }
             var _matrix = _field.GetMatrix;
 
-
-            int r = 0;
             for (int i = 0; i < _matrix.Width; i++)
             {
-                r = 0;
-                if (_matrix[i, r] == null)
+                for (int k = 0; k < _matrix.Height - 1; k++)
                 {
-                    SetAllToDown(_matrix, i, ref r);
+                    if (_matrix[i, k] == null)
+                    {
+                        SetAllToDown(_matrix, i, ref k);
+                    }
+
                 }
             }
-            for (int i = 0; i < cellsToLand.Count; i++)
+            if (cellsToLand.Count > 0)
             {
-                _field.StartToFall(cellsToLand[i]);
+                isSmtgNormalized = true;
+                for (int i = 0; i < cellsToLand.Count; i++)
+                {
+                    _field.StartToFall(cellsToLand[i]);
+                }
+
             }
+
+
 
 
             for (int i = 0; i < _matrix.Height; i++)
@@ -122,11 +131,16 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
                 }
                 CheckCells();
             }
-            _field.StartDestroyCells(potencialCombinations);
+            if (potencialCombinations.Count > 0)
+            {
+                isSmtgNormalized = true;
+                _field.StartDestroyCells(potencialCombinations);
+            }
 
 
 
             IsNormalazing = false;
+            return isSmtgNormalized;
         }
 
         private void SetAllToDown(Grid<FieldCell> matrix, int i, ref int k)

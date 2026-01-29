@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Project.CodeBase.Logic.Gameplay.Field
+namespace Assets.Project.CodeBase.Logic.Gameplay
 {
     public class BaseObject : MonoBehaviour
     {

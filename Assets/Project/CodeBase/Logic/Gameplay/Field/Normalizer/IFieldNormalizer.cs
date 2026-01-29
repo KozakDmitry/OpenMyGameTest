@@ -4,6 +4,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 {
     public interface IFieldNormalizer : IObject
     {
-        void TryToNormalize();
+        bool TryToNormalize();
     }
 }

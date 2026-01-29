@@ -4,29 +4,23 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 namespace Assets.Project.CodeBase.Logic.Gameplay
 {
-    public class CameraSizeProvider : InitializableWindow, IObject
+    public class CameraSizeProvider : InitializableWindow, ICameraSizeProvider
     {
         [SerializeField]
         private Camera _cam;
         public override UniTask Initialize()
         {
-            AllServices.Container.RegisterObject(this);
+            AllServices.Container.RegisterObject(this as ICameraSizeProvider);
             return base.Initialize();
         }
 
         private void OnDestroy()
         {
-            AllServices.Container.DeleteObject(this);
+            AllServices.Container.DeleteObject(this as ICameraSizeProvider);
         }
-        public Vector3 ScreenToWorldPoint2D(Vector2 screenPosition) =>
+        public Vector3 ScreenToWorldPoint2D(Vector2 screenPosition) => 
             _cam.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0));
-        public Bounds GetFieldSize()
-        {
-            Vector2 pos = _cam.transform.position;
-            var cameraOrthographicSize = _cam.orthographicSize;
-            var size = new Vector2(_cam.aspect * cameraOrthographicSize, cameraOrthographicSize);
-            return new Bounds(pos - size, size * 2);
-        }
+
         public Bounds GetCameraBounds()
         {
             float halfHeight = _cam.orthographicSize;

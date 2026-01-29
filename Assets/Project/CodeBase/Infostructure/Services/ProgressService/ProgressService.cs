@@ -1,9 +1,4 @@
-﻿using Assets.Project.CodeBase.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Project.CodeBase.Data.Progress;
 
 namespace Assets.Project.CodeBase.Infostructure.Services.ProgressService
 {
@@ -14,6 +9,7 @@ namespace Assets.Project.CodeBase.Infostructure.Services.ProgressService
             get;
             set;
         }
+
 
         public ProgressService()
         {

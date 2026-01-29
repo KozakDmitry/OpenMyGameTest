@@ -72,30 +72,51 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             base.Remove();
         }
 
-        public void MoveToPoint(int Layer, Vector2Int matrixPosition, CubeStatus status)
+        //public void MoveToPoint(int Layer, Vector2Int matrixPosition, CubeStatus status)
+        //{
+        //    cubeStatus = status;
+        //    SetLayer(Layer);
+        //    MoveCell(matrixPosition);
+
+        //}
+        //public void MoveToFall(int Layer, Vector2Int matrixPosition)
+        //{
+        //    SetLayer(Layer);
+        //    cubeStatus = CubeStatus.Falling;
+        //    this.matrixPosition = matrixPosition;
+        //    MoveCell(matrixPosition);
+        //}        //private void MoveCell(Vector2Int matrixPosition)
+        //{
+        //    transform.DOMove(_field.GridToPosition(matrixPosition), 0.5f).OnComplete(() =>
+        //    {
+        //        this.matrixPosition = matrixPosition;
+        //        cubeStatus = CubeStatus.Idle;
+        //        _field.OnMoveEnd(this);
+        //    });
+        //}
+        public async UniTask MoveToPointAsync(int layer, Vector2Int matrixPosition, CubeStatus status)
         {
             cubeStatus = status;
-            SetLayer(Layer);
-            MoveCell(matrixPosition);
-
+            SetLayer(layer);
+            await MoveCellAsync(matrixPosition);
         }
-        public void MoveToFall(int Layer, Vector2Int matrixPosition)
+
+        public async UniTask MoveToFallAsync(int layer, Vector2Int matrixPosition)
         {
-            SetLayer(Layer);
+            SetLayer(layer);
             cubeStatus = CubeStatus.Falling;
+            this.matrixPosition = matrixPosition; 
+            await MoveCellAsync(matrixPosition);
+        }
+        private async UniTask MoveCellAsync(Vector2Int matrixPosition)
+        {
+            var previousStatus = cubeStatus;
+            await transform.DOMove(_field.GridToPosition(matrixPosition), 0.5f)
+                          .AsyncWaitForCompletion();
             this.matrixPosition = matrixPosition;
-            MoveCell(matrixPosition);
+            cubeStatus = CubeStatus.Idle;
         }
 
-        private void MoveCell(Vector2Int matrixPosition)
-        {
-            transform.DOMove(_field.GridToPosition(matrixPosition), 0.5f).OnComplete(() =>
-            {
-                this.matrixPosition = matrixPosition;
-                cubeStatus = CubeStatus.Idle;
-                _field.OnMoveEnd(this);
-            });
-        }
 
         public async UniTask StartDestroing()
         {

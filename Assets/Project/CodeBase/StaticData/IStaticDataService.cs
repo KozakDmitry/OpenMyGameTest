@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Assets.Project.CodeBase.StaticData
 {
-    public interface IStaticDataService : IService
+    public interface IStaticDataService
     {
         FieldConfigData ForFieldConfig();
         InputConfigData ForInputConfig();

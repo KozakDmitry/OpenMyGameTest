@@ -16,5 +16,5 @@ MonoBehaviour:
     randomTimeRange: {x: 1000, y: 3000}
     maxBallonsAvailable: 3
   ballons:
-  - {fileID: 3422584593524960321, guid: 1b805b690056e0247bb0e77057ee62f7, type: 3}
-  - {fileID: 6994716657646004016, guid: 5475a7dd7b791be469a57b4fe9d6e9ec, type: 3}
+  - {fileID: 1686852518362632736, guid: 1b805b690056e0247bb0e77057ee62f7, type: 3}
+  - {fileID: 6414718365214087505, guid: 5475a7dd7b791be469a57b4fe9d6e9ec, type: 3}
