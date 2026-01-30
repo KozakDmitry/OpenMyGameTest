@@ -46,10 +46,8 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
                 ChangeLevel();
                 return;
             }
-            if (!_fieldNormalizer.TryToNormalize())
-            {
-                SaveCells();
-            }
+            SaveCells();
+            _fieldNormalizer.TryToNormalize();
         }
 
         private void SaveCells()

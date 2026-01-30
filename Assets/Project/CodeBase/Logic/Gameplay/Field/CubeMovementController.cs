@@ -63,7 +63,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         {
             if ((Vector2.Distance(startPosition, endPosition) >= _minimumDistanceConfig) && (endTime - startTime) <= _maximumTimeConfig)
             {
-                Debug.DrawLine(startPosition, endPosition, Color.red, 5f);
                 TryGetCube(startPosition, endPosition - startPosition);
             }
         }

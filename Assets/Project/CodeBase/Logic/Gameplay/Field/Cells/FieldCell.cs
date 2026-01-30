@@ -101,15 +101,14 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         {
             SetLayer(layer);
             cubeStatus = CubeStatus.Falling;
-            this.matrixPosition = matrixPosition; 
+            this.matrixPosition = matrixPosition;
             await MoveCellAsync(matrixPosition);
         }
         private async UniTask MoveCellAsync(Vector2Int matrixPosition)
         {
-            var previousStatus = cubeStatus;
+            this.matrixPosition = matrixPosition;
             await transform.DOMove(_field.GridToPosition(matrixPosition), 0.5f)
                           .AsyncWaitForCompletion();
-            this.matrixPosition = matrixPosition;
             cubeStatus = CubeStatus.Idle;
         }
 

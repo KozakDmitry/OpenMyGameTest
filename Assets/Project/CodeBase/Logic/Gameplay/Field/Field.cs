@@ -26,6 +26,11 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         private Vector2 _placeOffset;
         private Vector2 _cellSize;
 
+
+        private (Vector2Int result, bool isNotUp) newDirection;
+        private List<UniTask> uniTasks;
+        private Vector2Int changeVector;
+
         public delegate void OnFieldCellMoved();
         public event OnFieldCellMoved OnCellChanged;
 
@@ -72,7 +77,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             return new Vector2(cell.x * _cellWidth + halfCellWidth, cell.y * _cellWidth + halfCellWidth) + _placeOffset;
         }
 
-        private (Vector2Int result, bool isNotUp) newDirection;
         public void TrySwapTwoCubes(FieldCell firstCell, Vector2 secondDirection)
         {
             newDirection = GetDirection(firstCell.MatrixPosition, secondDirection);
@@ -102,14 +106,14 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
         }
 
 
-        private List<UniTask> uniTasks;
         private async void SwapCubes(FieldCell firstCell, FieldCell secondCell)
         {
             uniTasks = new();
             _matrix[firstCell.MatrixPosition] = secondCell;
             _matrix[secondCell.MatrixPosition] = firstCell;
+            changeVector = firstCell.MatrixPosition;
             uniTasks.Add(firstCell.MoveToPointAsync(GetLayerForCell(secondCell.MatrixPosition), secondCell.MatrixPosition, CubeStatus.Moving));
-            uniTasks.Add(secondCell.MoveToPointAsync(GetLayerForCell(firstCell.MatrixPosition), firstCell.MatrixPosition, CubeStatus.Moving));
+            uniTasks.Add(secondCell.MoveToPointAsync(GetLayerForCell(changeVector), changeVector, CubeStatus.Moving));
             await UniTask.WhenAll(uniTasks);
             OnCellChanged?.Invoke();
         }

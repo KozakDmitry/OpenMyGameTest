@@ -68,7 +68,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.BackGround
         public void Remove(BaseBalloon baseBalloon)
         {
             _movingBalloons.Remove(baseBalloon);
-            Destroy(baseBalloon);
+            Destroy(baseBalloon.gameObject);
         }
 
 

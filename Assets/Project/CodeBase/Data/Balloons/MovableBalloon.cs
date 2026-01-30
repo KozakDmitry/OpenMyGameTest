@@ -9,11 +9,11 @@ namespace Assets.Project.CodeBase.Data.Balloons
 
         private float frequency = 1.0f,
                       speed = 1.0f,
-                      offset = 2f,
+                      screenOffset = 2f,
                       startTime;
 
-        private Vector2 baseVelocity, 
-                        pos, 
+        private Vector2 baseVelocity,
+                        pos,
                         dir;
         private Vector3 movement;
 
@@ -22,9 +22,10 @@ namespace Assets.Project.CodeBase.Data.Balloons
             base.Initialize(balloonsController, cameraBounds);
             float hw = bounds.size.x * 0.5f,
                   hh = bounds.size.y * 0.5f;
-            GetPositionToSide(hw, hh, Random.Range(0, 4), out pos, out dir);
-            float angle = Random.Range(-30f, 30f) * Mathf.Deg2Rad;
-            float cos = Mathf.Cos(angle), sin = Mathf.Sin(angle);
+            GetPositionToSide(hw, hh, Random.Range(0, 2), out pos, out dir);
+            float angle = Random.Range(-10, 10f) * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(angle),
+                  sin = Mathf.Sin(angle);
             baseVelocity = new Vector2(
                 dir.x * cos - dir.y * sin,
                 dir.x * sin + dir.y * cos
@@ -39,20 +40,20 @@ namespace Assets.Project.CodeBase.Data.Balloons
             switch (side)
             {
                 case 0:
-                    pos = new(bounds.center.x - hw - 1f, Random.Range(bounds.center.y - hh, bounds.center.y + hh));
+                    pos = new Vector2(
+                        bounds.center.x - hw - 1f,
+                        Random.Range(bounds.center.y - hh, bounds.center.y + hh)
+                    );
                     dir = Vector2.right;
                     break;
+
                 case 1:
-                    pos = new(bounds.center.x + hw + 1f, Random.Range(bounds.center.y - hh, bounds.center.y + hh));
-                    dir = Vector2.left;
-                    break;
-                case 2:
-                    pos = new(Random.Range(bounds.center.x - hw, bounds.center.x + hw), bounds.center.y - hh - 1f);
-                    dir = Vector2.up;
-                    break;
                 default:
-                    pos = new(Random.Range(bounds.center.x - hw, bounds.center.x + hw), bounds.center.y + hh + 1f);
-                    dir = Vector2.down;
+                    pos = new Vector2(
+                        bounds.center.x + hw + 1f,
+                        Random.Range(bounds.center.y - hh, bounds.center.y + hh)
+                    );
+                    dir = Vector2.left;
                     break;
             }
         }
@@ -61,10 +62,9 @@ namespace Assets.Project.CodeBase.Data.Balloons
         protected override void CustomUpdate()
         {
             if (baseVelocity == Vector2.zero) return;
-            movement = (Vector2)(baseVelocity *
-                                Time.deltaTime) +
+            movement = (Vector2)(baseVelocity * Time.deltaTime) +
                                 new Vector2(-baseVelocity.y, baseVelocity.x).normalized *
-                                Mathf.Sin(frequency * Time.time - startTime) *
+                                Mathf.Sin(frequency * (Time.time - startTime)) *
                                 Time.deltaTime;
             transform.position += movement;
 
@@ -76,10 +76,10 @@ namespace Assets.Project.CodeBase.Data.Balloons
 
         private bool IsInsideExtendedBounds(Vector3 pos)
         {
-            return pos.x >= bounds.min.x - offset &&
-                   pos.x <= bounds.max.x + offset &&
-                   pos.y >= bounds.min.y - offset &&
-                   pos.y <= bounds.max.y + offset;
+            return pos.x >= bounds.min.x - screenOffset &&
+                   pos.x <= bounds.max.x + screenOffset &&
+                   pos.y >= bounds.min.y - screenOffset &&
+                   pos.y <= bounds.max.y + screenOffset;
         }
     }
 }

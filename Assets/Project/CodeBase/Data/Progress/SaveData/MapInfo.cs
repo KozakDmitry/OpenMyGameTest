@@ -43,12 +43,10 @@ namespace Assets.Project.CodeBase.Data.Progress.SaveData
     {
         public Vector2Int pos;
         public int id;
-        public CubeStatus status;
-        public LevelConditions(Vector2Int position, int idCurr,CubeStatus cubeStatus)
+        public LevelConditions(Vector2Int position, int idCurr)
         {
             pos = position;
             id = idCurr;
-            status = cubeStatus;
         }
     }
 }

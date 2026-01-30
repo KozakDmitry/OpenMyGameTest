@@ -50,7 +50,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             List<LevelConditions> conditions = new();
             foreach (var item in _field.GetFieldCells)
             {
-                conditions.Add(new LevelConditions(item.MatrixPosition, item.Id, item.CubeStatus));
+                conditions.Add(new LevelConditions(item.MatrixPosition, item.Id));
             }
             progress.mapInfo.levelCondition = conditions;
         }
@@ -105,7 +105,6 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             for (int i = 0; i < save.Count; i++)
             {
                 var item = _cubeFactory.CreateFieldCell(save[i].id);
-                item.SetCubeStasus(save[i].status);
                 _field.AddCell(item, save[i].pos);
             }
         }
