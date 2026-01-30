@@ -32,7 +32,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay
 
         public virtual void Remove()
         {
-            if (gameObject != null)
+            if (this != null)
             {
                 Destroy(gameObject);
             }

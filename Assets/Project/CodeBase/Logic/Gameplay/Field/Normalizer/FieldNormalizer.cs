@@ -30,7 +30,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             return base.Initialize();
 
         }
-        
+
         private void OnDestroy()
         {
             if (_field != null)
@@ -57,6 +57,7 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             }
             var _matrix = _field.GetMatrix;
 
+
             for (int i = 0; i < _matrix.Width; i++)
             {
                 for (int k = 0; k < _matrix.Height - 1; k++)
@@ -76,56 +77,14 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
             }
 
 
-            for (int i = 0; i < _matrix.Height; i++)
+            for (int y = 0; y < _matrix.Height; y++)
             {
-                for (int k = 0; k < _matrix.Width; k++)
-                {
-                    if (_matrix[k, i] == null)
-                    {
-                        CheckCells();
-                        continue;
-                    }
-                    if ((lastCheckedCells.Count == 0 || _matrix[k, i].Id == lastCheckedCells[^1].Id))
-                    {
-                        if (_matrix[k, i].CubeStatus == CubeStatus.Idle)
-                        {
-                            lastCheckedCells.Add(_matrix[k, i]);
-                        }
-                        else
-                        {
-                            CheckCells();
-                        }
-                    }
-                    else
-                    {
-                        CheckCells();
-                        lastCheckedCells.Add(_matrix[k, i]);
-                    }
-                }
-                CheckCells();
+                CheckCombinationsInLine(_matrix, y, true);
             }
 
-            for (int k = 0; k < _matrix.Width; k++)
+            for (int x = 0; x < _matrix.Width; x++)
             {
-                for (int i = 0; i < _matrix.Height; i++)
-                {
-                    if (_matrix[k, i] == null)
-                    {
-                        CheckCells();
-                        continue;
-                    }
-                    if (_matrix[k, i].CubeStatus == CubeStatus.Idle &&
-                        (lastCheckedCells.Count == 0 || _matrix[k, i].Id == lastCheckedCells[^1].Id))
-                    {
-                        lastCheckedCells.Add(_matrix[k, i]);
-                    }
-                    else
-                    {
-                        CheckCells();
-                        lastCheckedCells.Add(_matrix[k, i]);
-                    }
-                }
-                CheckCells();
+                CheckCombinationsInLine(_matrix, x, false);
             }
             if (potencialCombinations.Count > 0)
             {
@@ -161,19 +120,40 @@ namespace Assets.Project.CodeBase.Logic.Gameplay.Field
 
             }
         }
+        private void CheckCombinationsInLine(Grid<FieldCell> matrix, int index, bool isHorizontal)
+        {
+            lastCheckedCells.Clear();
+            for (int i = 0; i < (isHorizontal ? matrix.Width : matrix.Height); i++)
+            {
+                FieldCell cell = matrix[isHorizontal ? i : index,
+                                        isHorizontal ? index : i];
+
+                if (cell == null || cell.CubeStatus != CubeStatus.Idle)
+                {
+                    CheckCells();
+                    continue;
+                }
+
+                if (lastCheckedCells.Count == 0 || lastCheckedCells[0].Id == cell.Id)
+                {
+                    lastCheckedCells.Add(cell);
+                }
+                else
+                {
+                    CheckCells();
+                    lastCheckedCells.Add(cell);
+                }
+            }
+            CheckCells();
+        }
 
         private void CheckCells()
         {
             if (lastCheckedCells.Count >= 3)
             {
-                for (int i = 0; i < lastCheckedCells.Count; i++)
-                {
-                    potencialCombinations.Add(lastCheckedCells[i]);
-                }
+                potencialCombinations.AddRange(lastCheckedCells);
             }
-
             lastCheckedCells.Clear();
-            return;
         }
     }
 }
